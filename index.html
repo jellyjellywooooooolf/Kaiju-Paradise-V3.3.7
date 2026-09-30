@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Kaiju Paradise Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body, #map { height: 100%; margin: 0; background: #222; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+  // Your pins go here. pos is [y, x] in pixels, measured from the BOTTOM-left.
+  // Click the map to see coordinates for new pins.
+  const locations = [
+    {
+      name: "Example Pin",
+      pos: [500, 500],
+      text: "Replace me with a real location!",
+      img: ""   // e.g. "images/example.jpg" (leave blank for no image)
+    }
+  ];
+
+  // Load the image first so we can read its size automatically
+  const img = new Image();
+  img.onload = () => {
+    const w = img.naturalWidth, h = img.naturalHeight;
+
+    const map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: -4,
+      maxZoom: 2
+    });
+
+    const bounds = [[0, 0], [h, w]];
+    L.imageOverlay('map34.png', bounds).addTo(map);
+    map.fitBounds(bounds);
+    map.setMaxBounds([[-h * 0.25, -w * 0.25], [h * 1.25, w * 1.25]]);
+
+    locations.forEach(loc => {
+      const imgHtml = loc.img ? `<img src="${loc.img}" style="max-width:250px"><br>` : "";
+      L.marker(loc.pos).addTo(map).bindPopup(
+        `<h3>${loc.name}</h3>${imgHtml}<p>${loc.text}</p>`
+      );
+    });
+
+    // Click anywhere to see its coordinates (handy for placing pins)
+    map.on('click', e => {
+      const y = Math.round(e.latlng.lat), x = Math.round(e.latlng.lng);
+      L.popup().setLatLng(e.latlng).setContent(`[${y}, ${x}]`).openOn(map);
+    });
+  };
+  img.src = 'map34.png';
+</script>
+</body>
+</html>
